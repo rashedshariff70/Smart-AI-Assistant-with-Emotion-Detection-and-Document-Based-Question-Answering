@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuralMind AI — Prediction Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════
+   THEME TOKENS
+═══════════════════════════════════════════════════════ */
+:root,[data-theme="dark"]{
+  --bg:#05080f; --surface:#0d1220; --card:#111827; --card2:#0f172a;
+  --border:#1e2d4a; --border2:#253554;
+  --accent:#38bdf8; --accent2:#818cf8; --accent3:#34d399; --warn:#f59e0b;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#475569;
+  --nav-bg:rgba(5,8,15,.9); --shadow:rgba(0,0,0,.45);
+  --toggle-track:#1e2d4a; --toggle-thumb:#38bdf8;
+  --r:14px;
+}
+[data-theme="light"]{
+  --bg:#f0f4ff; --surface:#ffffff; --card:#ffffff; --card2:#f8faff;
+  --border:#dde4f0; --border2:#c8d4eb;
+  --accent:#0284c7; --accent2:#6366f1; --accent3:#059669; --warn:#d97706;
+  --text:#0f172a; --muted:#64748b; --muted2:#94a3b8;
+  --nav-bg:rgba(240,244,255,.92); --shadow:rgba(0,0,0,.12);
+  --toggle-track:#dde4f0; --toggle-thumb:#6366f1;
+  --r:14px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;
+  transition:background .35s,color .35s;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 5% 15%,rgba(56,189,248,.05) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 95% 85%,rgba(129,140,248,.05) 0%,transparent 60%);
+  transition:opacity .35s;
+}
+[data-theme="light"] body::before{opacity:.4}
+
+/* ═══════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 2.5rem;
+  background:var(--nav-bg);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:background .35s,border-color .35s;
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  text-decoration:none;
+}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.nav-links{display:flex;gap:1.5rem;list-style:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:.88rem;font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+
+/* ─── Theme Toggle ─── */
+.theme-toggle{
+  display:flex;align-items:center;gap:.5rem;cursor:pointer;
+  background:var(--toggle-track);border:1px solid var(--border);
+  border-radius:100px;padding:.3rem .65rem;
+  transition:background .35s,border-color .35s;
+  user-select:none;
+}
+.toggle-icon{font-size:.9rem;line-height:1;transition:transform .3s}
+.toggle-label{
+  font-size:.7rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);transition:color .3s;white-space:nowrap;
+}
+.theme-toggle:hover .toggle-label{color:var(--text)}
+[data-theme="light"] .toggle-icon{transform:rotate(180deg)}
+
+/* ═══════════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════════ */
+.studio{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:260px 1fr;
+  min-height:100vh;padding-top:62px;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════════════ */
+.sidebar{
+  position:sticky;top:62px;height:calc(100vh - 62px);overflow-y:auto;
+  background:var(--surface);border-right:1px solid var(--border);
+  padding:2rem 1.25rem;display:flex;flex-direction:column;gap:.5rem;
+  transition:background .35s,border-color .35s;
+}
+.sidebar-head{
+  font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);padding:.5rem .5rem 1rem;
+}
+.stage-btn{
+  display:flex;align-items:center;gap:.75rem;
+  padding:.85rem 1rem;border-radius:10px;cursor:pointer;
+  border:1px solid transparent;background:transparent;
+  color:var(--muted);text-align:left;width:100%;
+  transition:all .2s;font-family:'DM Sans',sans-serif;font-size:.88rem;
+}
+.stage-btn:hover{background:var(--card);color:var(--text)}
+.stage-btn.active{
+  background:var(--card);border-color:var(--border2);color:var(--text);
+}
+.stage-btn .sb-icon{
+  width:34px;height:34px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;flex-shrink:0;transition:all .2s;
+}
+.sb-icon.blue{background:rgba(56,189,248,.12)}
+.sb-icon.purple{background:rgba(129,140,248,.12)}
+.sb-icon.green{background:rgba(52,211,153,.12)}
+.stage-btn.active .sb-icon.blue{background:rgba(56,189,248,.2);box-shadow:0 0 12px rgba(56,189,248,.2)}
+.stage-btn.active .sb-icon.purple{background:rgba(129,140,248,.2);box-shadow:0 0 12px rgba(129,140,248,.2)}
+.stage-btn.active .sb-icon.green{background:rgba(52,211,153,.2);box-shadow:0 0 12px rgba(52,211,153,.2)}
+.sb-text{display:flex;flex-direction:column;line-height:1}
+.sb-num{font-size:.68rem;color:var(--muted);margin-bottom:.2rem}
+.sb-label{font-weight:600;font-size:.85rem}
+
+.sidebar-footer{
+  margin-top:auto;padding-top:1.5rem;border-top:1px solid var(--border);
+  font-size:.75rem;color:var(--muted);line-height:1.6;
+  transition:border-color .35s;
+}
+.sidebar-footer strong{color:var(--accent);font-weight:600}
+
+/* ═══════════════════════════════════════════════════════
+   MAIN
+═══════════════════════════════════════════════════════ */
+.main{padding:2.5rem;overflow-y:auto}
+
+/* ═══════════════════════════════════════════════════════
+   PANEL
+═══════════════════════════════════════════════════════ */
+.panel{display:none;animation:fadeIn .35s ease}
+.panel.active{display:block}
+
+/* Panel Header */
+.panel-header{margin-bottom:2rem}
+.panel-eyebrow{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  padding:.3rem .8rem;border-radius:6px;margin-bottom:.8rem;
+}
+.eyebrow-blue{background:rgba(56,189,248,.1);color:var(--accent);border:1px solid rgba(56,189,248,.2)}
+.eyebrow-purple{background:rgba(129,140,248,.1);color:var(--accent2);border:1px solid rgba(129,140,248,.2)}
+.eyebrow-green{background:rgba(52,211,153,.1);color:var(--accent3);border:1px solid rgba(52,211,153,.2)}
+.panel-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.5rem,2.5vw,2rem);letter-spacing:-.03em;margin-bottom:.4rem;
+}
+.panel-sub{color:var(--muted);font-size:.9rem;line-height:1.6}
+
+/* ═══════════════════════════════════════════════════════
+   INPUTS
+═══════════════════════════════════════════════════════ */
+.input-group{margin-bottom:1.25rem}
+label{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:.5rem;letter-spacing:.04em;text-transform:uppercase}
+textarea,input[type=text]{
+  width:100%;background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:1rem;color:var(--text);
+  font-family:'DM Sans',sans-serif;font-size:.92rem;line-height:1.6;
+  resize:vertical;outline:none;transition:border-color .2s,background .35s;
+}
+textarea:focus,input[type=text]:focus{border-color:var(--accent)}
+textarea{min-height:120px}
+textarea::placeholder,input::placeholder{color:var(--muted2)}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.8rem 1.75rem;border-radius:10px;font-size:.9rem;font-weight:600;
+  cursor:pointer;border:none;transition:all .22s;font-family:'DM Sans',sans-serif;
+}
+.btn-blue{background:linear-gradient(135deg,var(--accent),#0ea5e9);color:#020817;box-shadow:0 0 20px rgba(56,189,248,.2)}
+.btn-blue:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(56,189,248,.35)}
+.btn-purple{background:linear-gradient(135deg,var(--accent2),#6366f1);color:#fff;box-shadow:0 0 20px rgba(129,140,248,.2)}
+.btn-purple:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(129,140,248,.35)}
+.btn-green{background:linear-gradient(135deg,var(--accent3),#10b981);color:#020817;box-shadow:0 0 20px rgba(52,211,153,.2)}
+.btn-green:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(52,211,153,.35)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+.btn-sm{padding:.5rem 1.1rem;font-size:.82rem}
+.btn-outline-sm{
+  display:inline-flex;align-items:center;gap:.4rem;
+  padding:.45rem 1rem;border-radius:8px;font-size:.78rem;font-weight:600;
+  cursor:pointer;background:transparent;border:1px solid var(--border);
+  color:var(--muted);transition:all .2s;font-family:'DM Sans',sans-serif;
+}
+.btn-outline-sm:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ═══════════════════════════════════════════════════════
+   LOADER
+═══════════════════════════════════════════════════════ */
+.loader{display:none;align-items:center;gap:.6rem;color:var(--muted);font-size:.85rem;margin-top:1rem}
+.loader.show{display:flex}
+.spinner{
+  width:18px;height:18px;border:2px solid var(--border);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══════════════════════════════════════════════════════
+   RESULT BOXES
+═══════════════════════════════════════════════════════ */
+.result-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:1.5rem;margin-top:1.5rem;
+  display:none;animation:fadeIn .4s ease;
+  transition:background .35s,border-color .35s;
+}
+.result-box.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   EMOTION RESULT
+═══════════════════════════════════════════════════════ */
+.emotion-primary{
+  display:flex;align-items:center;gap:1.25rem;
+  padding:1.25rem;background:var(--card2);border-radius:10px;margin-bottom:1.5rem;
+  transition:background .35s;
+}
+.emotion-emoji{font-size:3rem;line-height:1}
+.emotion-info h3{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;
+  text-transform:capitalize;letter-spacing:-.02em;
+}
+.emotion-meta{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:.4rem}
+.emotion-badge{
+  padding:.25rem .7rem;border-radius:6px;font-size:.75rem;font-weight:600;
+  text-transform:capitalize;
+}
+.badge-pos{background:rgba(52,211,153,.12);color:var(--accent3)}
+.badge-neg{background:rgba(239,68,68,.12);color:#f87171}
+.badge-neu{background:rgba(148,163,184,.1);color:#94a3b8}
+.badge-conf{background:rgba(56,189,248,.1);color:var(--accent)}
+.badge-int{background:rgba(245,158,11,.1);color:var(--warn)}
+
+.emotion-bars{display:flex;flex-direction:column;gap:.7rem;margin-bottom:1.25rem}
+.bar-row{display:flex;align-items:center;gap:.75rem}
+.bar-label{width:70px;font-size:.8rem;color:var(--muted);text-transform:capitalize;flex-shrink:0}
+.bar-track{flex:1;background:var(--card2);border-radius:100px;height:8px;overflow:hidden;transition:background .35s}
+.bar-fill{height:100%;border-radius:100px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bar-val{width:36px;font-size:.78rem;color:var(--muted);text-align:right;flex-shrink:0}
+
+.emotion-summary{
+  background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.12);
+  border-radius:10px;padding:1rem 1.2rem;
+  font-size:.88rem;color:var(--text);line-height:1.65;font-style:italic;
+  transition:background .35s,border-color .35s;
+}
+[data-theme="light"] .emotion-summary{background:rgba(2,132,199,.05);border-color:rgba(2,132,199,.15)}
+
+/* ═══════════════════════════════════════════════════════
+   UPLOAD AREA
+═══════════════════════════════════════════════════════ */
+.upload-zone{
+  border:2px dashed var(--border2);border-radius:var(--r);
+  padding:2.5rem;text-align:center;cursor:pointer;
+  transition:all .25s;background:var(--card2);margin-bottom:1.25rem;
+}
+.upload-zone:hover,.upload-zone.drag{border-color:var(--accent2);background:rgba(129,140,248,.04)}
+.upload-zone input{display:none}
+.upload-icon{font-size:2.5rem;margin-bottom:.75rem}
+.upload-text{color:var(--muted);font-size:.88rem;line-height:1.6}
+.upload-text strong{color:var(--text)}
+.file-types{
+  display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.75rem;
+}
+.ftype{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:5px;padding:.2rem .55rem;font-size:.7rem;color:var(--muted);
+  transition:background .35s,border-color .35s;
+}
+
+.doc-status{
+  display:none;align-items:center;gap:.75rem;
+  background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.15);
+  border-radius:10px;padding:.85rem 1.1rem;margin-bottom:1rem;
+  font-size:.85rem;
+}
+.doc-status.show{display:flex}
+.doc-status-icon{font-size:1.2rem}
+
+.rag-answer{
+  background:var(--card2);border-radius:10px;
+  padding:1.1rem 1.25rem;font-size:.9rem;line-height:1.75;
+  white-space:pre-wrap;transition:background .35s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHAT
+═══════════════════════════════════════════════════════ */
+.chat-window{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);height:420px;overflow-y:auto;
+  padding:1.25rem;display:flex;flex-direction:column;gap:.75rem;
+  margin-bottom:1rem;scroll-behavior:smooth;
+  transition:background .35s,border-color .35s;
+}
+.msg{display:flex;gap:.75rem;align-items:flex-start;animation:fadeIn .3s ease;}
+.msg-user{flex-direction:row-reverse}
+.msg-avatar{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;flex-shrink:0;
+}
+.av-ai{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.25)}
+.av-user{background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.25)}
+.msg-bubble{
+  max-width:80%;padding:.8rem 1rem;border-radius:12px;
+  font-size:.88rem;line-height:1.7;
+}
+.bubble-ai{
+  background:var(--card2);border:1px solid var(--border);
+  border-top-left-radius:4px;transition:background .35s,border-color .35s;
+}
+.bubble-user{
+  background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);
+  border-top-right-radius:4px;color:var(--text);
+}
+
+/* Markdown rendering inside chat bubbles */
+.bubble-ai strong{color:var(--text);font-weight:700}
+.bubble-ai em{color:var(--muted);font-style:italic}
+.bubble-ai code{
+  background:var(--bg);border:1px solid var(--border);
+  padding:.1rem .35rem;border-radius:4px;font-family:monospace;font-size:.82em;
+  transition:background .35s,border-color .35s;
+}
+.bubble-ai ul,.bubble-ai ol{padding-left:1.2rem;margin:.4rem 0}
+.bubble-ai li{margin-bottom:.2rem}
+.bubble-ai p{margin-bottom:.4rem}
+.bubble-ai p:last-child{margin-bottom:0}
+.bubble-ai h3,.bubble-ai h4{font-family:'Syne',sans-serif;font-weight:700;margin:.5rem 0 .2rem}
+
+.chat-input-row{display:flex;gap:.75rem;align-items:flex-end}
+.chat-input-row textarea{margin:0;min-height:52px;max-height:120px;resize:none;flex:1}
+
+.typing-dots{
+  display:flex;gap:4px;align-items:center;padding:.75rem 1rem;
+  background:var(--card2);border:1px solid var(--border);border-radius:12px;
+  border-top-left-radius:4px;
+}
+.typing-dots span{
+  width:7px;height:7px;border-radius:50%;background:var(--muted);
+  animation:dotBounce .9s ease infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.15s}
+.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes dotBounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* ═══════════════════════════════════════════════════════
+   ERROR
+═══════════════════════════════════════════════════════ */
+.error-toast{
+  display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);
+  border-radius:10px;padding:.85rem 1.1rem;color:#f87171;
+  font-size:.85rem;margin-top:1rem;
+}
+.error-toast.show{display:block}
+
+/* ═══════════════════════════════════════════════════════
+   MISC
+═══════════════════════════════════════════════════════ */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+
+@media(max-width:768px){
+  .studio{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:1rem;border-right:none;border-bottom:1px solid var(--border)}
+  .stage-btn{width:auto;flex:0 0 auto}
+  .sb-num,.sidebar-footer,.sidebar-head{display:none}
+  nav{padding:1rem 1.25rem}
+  .nav-right{gap:1rem}
+  .main{padding:1.5rem 1rem}
+  .toggle-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">NeuralMind AI</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/prediction" class="active">Studio</a></li>
+    </ul>
+    <!-- THEME TOGGLE -->
+    <div class="theme-toggle" onclick="toggleTheme()" title="Switch theme">
+      <span class="toggle-icon" id="toggle-icon">🌙</span>
+      <span class="toggle-label" id="toggle-label">Dark</span>
+    </div>
+  </div>
+</nav>
+
+<div class="studio">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-head">AI Stages</div>
+
+    <button class="stage-btn active" onclick="switchPanel('emotion',this)">
+      <div class="sb-icon blue">🧠</div>
+      <div class="sb-text"><span class="sb-num">Stage 1</span><span class="sb-label">Emotion Detection</span></div>
+    </button>
+
+    <button class="stage-btn" onclick="switchPanel('rag',this)">
+      <div class="sb-icon purple">📄</div>
+      <div class="sb-text"><span class="sb-num">Stage 2</span><span class="sb-label">Document RAG Chat</span></div>
+    </button>
+
+    <button class="stage-btn" onclick="switchPanel('chat',this)">
+      <div class="sb-icon green">💬</div>
+      <div class="sb-text"><span class="sb-num">Stage 3</span><span class="sb-label">Project Q&amp;A Bot</span></div>
+    </button>
+
+    <div class="sidebar-footer">
+      Model: <strong>qwen/qwen3-32b</strong><br/>
+      Inference: <strong>Groq API</strong><br/>
+      Backend: <strong>Flask + Python</strong>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ═══════════════════════════════════════════
+         STAGE 1 — EMOTION DETECTION
+    ═══════════════════════════════════════════ -->
+    <div class="panel active" id="panel-emotion">
+      <div class="panel-header">
+        <div class="panel-eyebrow eyebrow-blue">🧠 Stage 1 · NLP</div>
+        <h2 class="panel-title">Emotion Detection Engine</h2>
+        <p class="panel-sub">Enter any text — a message, journal entry, review — and the AI will map out its emotional landscape across 7 dimensions.</p>
+      </div>
+
+      <div class="input-group">
+        <label>Your Text</label>
+        <textarea id="emotion-input" placeholder="e.g. I can't believe I got the job! I've been working so hard for this moment and it finally paid off. I'm over the moon but also a bit nervous about starting..."></textarea>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-blue" onclick="detectEmotion()">🔍 Analyse Emotions</button>
+        <button class="btn-outline-sm" onclick="loadEmotionSample()">Load sample text</button>
+      </div>
+
+      <div class="loader" id="emotion-loader"><div class="spinner"></div>Analysing emotional content…</div>
+      <div class="error-toast" id="emotion-error"></div>
+
+      <!-- RESULT -->
+      <div class="result-box" id="emotion-result">
+        <div class="emotion-primary" id="emotion-primary">
+          <div class="emotion-emoji" id="emotion-emoji">😊</div>
+          <div class="emotion-info">
+            <h3 id="emotion-label">Joy</h3>
+            <div class="emotion-meta" id="emotion-meta"></div>
+          </div>
+        </div>
+        <div class="emotion-bars" id="emotion-bars"></div>
+        <div class="emotion-summary" id="emotion-summary"></div>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════
+         STAGE 2 — RAG DOCUMENT CHAT
+    ═══════════════════════════════════════════ -->
+    <div class="panel" id="panel-rag">
+      <div class="panel-header">
+        <div class="panel-eyebrow eyebrow-purple">📄 Stage 2 · RAG</div>
+        <h2 class="panel-title">Document Intelligence</h2>
+        <p class="panel-sub">Upload a PDF, DOCX, or TXT file. The AI reads it and answers your questions grounded strictly in that document.</p>
+      </div>
+
+      <!-- Upload -->
+      <div class="upload-zone" id="upload-zone"
+           onclick="document.getElementById('file-input').click()"
+           ondragover="handleDragOver(event)"
+           ondrop="handleDrop(event)"
+           ondragleave="this.classList.remove('drag')">
+        <input type="file" id="file-input" accept=".pdf,.docx,.txt" onchange="handleFileSelect(event)"/>
+        <div class="upload-icon">📂</div>
+        <div class="upload-text"><strong>Click to browse</strong> or drag &amp; drop your document</div>
+        <div class="file-types">
+          <span class="ftype">PDF</span><span class="ftype">DOCX</span><span class="ftype">TXT</span>
+        </div>
+      </div>
+
+      <div class="loader" id="upload-loader"><div class="spinner" style="border-top-color:var(--accent2)"></div>Extracting document text…</div>
+      <div class="error-toast" id="upload-error"></div>
+
+      <div class="doc-status" id="doc-status">
+        <span class="doc-status-icon">✅</span>
+        <div>
+          <strong id="doc-filename">document.pdf</strong> loaded —
+          <span id="doc-chars"></span> characters extracted.
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div class="input-group">
+        <label>Ask a question about your document</label>
+        <textarea id="rag-question" placeholder="e.g. What are the main conclusions of this document?" rows="3"></textarea>
+      </div>
+
+      <div class="row">
+        <button class="btn btn-purple" id="rag-ask-btn" onclick="askRAG()" disabled>💬 Ask Document</button>
+        <button class="btn-outline-sm" onclick="loadRAGSample()">Sample question</button>
+      </div>
+
+      <div class="loader" id="rag-loader"><div class="spinner" style="border-top-color:var(--accent2)"></div>Searching document…</div>
+      <div class="error-toast" id="rag-error"></div>
+
+      <div class="result-box" id="rag-result">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+          <span style="font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent2)">Answer</span>
+        </div>
+        <div class="rag-answer" id="rag-answer"></div>
+      </div>
+    </div>
+
+
+    <!-- ═══════════════════════════════════════════
+         STAGE 3 — PROJECT Q&A CHATBOT
+    ═══════════════════════════════════════════ -->
+    <div class="panel" id="panel-chat">
+      <div class="panel-header">
+        <div class="panel-eyebrow eyebrow-green">💬 Stage 3 · Chatbot</div>
+        <h2 class="panel-title">Project Q&amp;A Chatbot</h2>
+        <p class="panel-sub">Ask anything about NeuralMind AI — the tech stack, architecture, API setup, deployment, or how each stage works.</p>
+      </div>
+
+      <div class="chat-window" id="chat-window">
+        <div class="msg">
+          <div class="msg-avatar av-ai">🤖</div>
+          <div class="msg-bubble bubble-ai">
+            Hey! I'm the NeuralMind project bot. Ask me anything about this project — the tech stack, how the emotion engine works, how RAG is implemented, deployment options, API key setup, or any other technical detail. What would you like to know?
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggestion chips -->
+      <div id="chat-suggestions" style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem">
+        <button class="btn-outline-sm" onclick="sendSuggestion('What model powers this project?')">What model is used?</button>
+        <button class="btn-outline-sm" onclick="sendSuggestion('How does the RAG stage work?')">How does RAG work?</button>
+        <button class="btn-outline-sm" onclick="sendSuggestion('What is the tech stack?')">Tech stack?</button>
+        <button class="btn-outline-sm" onclick="sendSuggestion('How do I deploy this project?')">Deployment?</button>
+      </div>
+
+      <div class="chat-input-row">
+        <textarea id="chat-input" placeholder="Ask about the project…" rows="2"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+        <button class="btn btn-green btn-sm" onclick="sendChat()" id="chat-send-btn">Send ↑</button>
+      </div>
+      <div class="loader" id="chat-loader" style="margin-top:.75rem"><div class="spinner" style="border-top-color:var(--accent3)"></div>Thinking…</div>
+      <div class="error-toast" id="chat-error"></div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ─── Theme toggle ──────────────────────────────────────────────────────────
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('nm-theme',t);
+  const icon  = document.getElementById('toggle-icon');
+  const label = document.getElementById('toggle-label');
+  if(icon){
+    icon.textContent  = t==='light' ? '☀️' : '🌙';
+    label.textContent = t==='light' ? 'Light' : 'Dark';
+  }
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur==='dark' ? 'light' : 'dark');
+}
+(function(){
+  const saved = localStorage.getItem('nm-theme') || 'dark';
+  applyTheme(saved);
+})();
+
+// ─── Panel switching ───────────────────────────────────────────────────────
+function switchPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────
+function showLoader(id) { document.getElementById(id).classList.add('show'); }
+function hideLoader(id) { document.getElementById(id).classList.remove('show'); }
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = '⚠️ ' + msg;
+  el.classList.add('show');
+}
+function hideError(id) { document.getElementById(id).classList.remove('show'); }
+
+// ─── Simple markdown → HTML renderer ─────────────────────────────────────
+function renderMarkdown(text) {
+  return text
+    // Escape HTML first
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    // Bold **text**
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    // Italic *text*
+    .replace(/\*(.+?)\*/g,'<em>$1</em>')
+    // Inline code `code`
+    .replace(/`([^`]+)`/g,'<code>$1</code>')
+    // Headers ### and ##
+    .replace(/^### (.+)$/gm,'<h4>$1</h4>')
+    .replace(/^## (.+)$/gm,'<h3>$1</h3>')
+    // Bullet lists - item
+    .replace(/^\s*[-•]\s+(.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
+    // Numbered lists
+    .replace(/^\s*\d+\.\s+(.+)$/gm,'<li>$1</li>')
+    // Paragraphs: double newline
+    .replace(/\n\n+/g,'</p><p>')
+    // Single newline
+    .replace(/\n/g,'<br/>')
+    // Wrap in paragraph
+    .replace(/^(.+)$/,'<p>$1</p>');
+}
+
+// ─── EMOTION COLOURS ──────────────────────────────────────────────────────
+const EMOTION_COLORS = {
+  joy:'#fbbf24',sadness:'#60a5fa',anger:'#f87171',
+  fear:'#c084fc',surprise:'#34d399',disgust:'#a3e635',neutral:'#94a3b8'
+};
+const EMOTION_EMOJIS = {
+  joy:'😊',sadness:'😢',anger:'😠',fear:'😨',
+  surprise:'😲',disgust:'🤢',neutral:'😐'
+};
+
+// ─── STAGE 1 — EMOTION ────────────────────────────────────────────────────
+async function detectEmotion() {
+  const text = document.getElementById('emotion-input').value.trim();
+  if (!text) { showError('emotion-error','Please enter some text to analyse.'); return; }
+  hideError('emotion-error');
+  showLoader('emotion-loader');
+  document.getElementById('emotion-result').classList.remove('show');
+
+  try {
+    const res = await fetch('/api/emotion', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ text })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    renderEmotion(data);
+  } catch(e) {
+    showError('emotion-error', e.message);
+  } finally {
+    hideLoader('emotion-loader');
+  }
+}
+
+function renderEmotion(d) {
+  const primary = (d.primary_emotion || 'neutral').toLowerCase();
+  document.getElementById('emotion-emoji').textContent = EMOTION_EMOJIS[primary] || '🤔';
+  document.getElementById('emotion-label').textContent = primary.charAt(0).toUpperCase() + primary.slice(1);
+
+  const sentClass = d.sentiment === 'positive' ? 'badge-pos' : d.sentiment === 'negative' ? 'badge-neg' : 'badge-neu';
+  document.getElementById('emotion-meta').innerHTML = `
+    <span class="emotion-badge ${sentClass}">${d.sentiment || 'neutral'}</span>
+    <span class="emotion-badge badge-int">${d.intensity || 'medium'} intensity</span>
+    <span class="emotion-badge badge-conf">${d.confidence || 0}% confident</span>
+  `;
+
+  const emotions = d.emotions || {};
+  const barsEl = document.getElementById('emotion-bars');
+  barsEl.innerHTML = Object.entries(emotions).map(([name, val]) => `
+    <div class="bar-row">
+      <div class="bar-label">${name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:0%;background:${EMOTION_COLORS[name]||'#64748b'}" data-w="${val}"></div></div>
+      <div class="bar-val">${val}%</div>
+    </div>`).join('');
+
+  document.getElementById('emotion-summary').textContent = '"' + (d.summary || 'No summary available.') + '"';
+  document.getElementById('emotion-result').classList.add('show');
+
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(el => {
+      el.style.width = el.dataset.w + '%';
+    });
+  }, 50);
+}
+
+function loadEmotionSample() {
+  document.getElementById('emotion-input').value =
+    "I just got rejected from my dream university. I studied for months, gave everything I had, and it still wasn't enough. I feel devastated, but also strangely determined to prove them wrong someday.";
+}
+
+// ─── STAGE 2 — RAG ────────────────────────────────────────────────────────
+let docLoaded = false;
+
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.add('drag');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('upload-zone').classList.remove('drag');
+  const file = e.dataTransfer.files[0];
+  if (file) uploadFile(file);
+}
+
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) uploadFile(file);
+}
+
+async function uploadFile(file) {
+  hideError('upload-error');
+  showLoader('upload-loader');
+  document.getElementById('doc-status').classList.remove('show');
+
+  const fd = new FormData();
+  fd.append('file', file);
+
+  try {
+    const res = await fetch('/api/upload', { method:'POST', body: fd });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    document.getElementById('doc-filename').textContent = file.name;
+    document.getElementById('doc-chars').textContent = data.chars.toLocaleString();
+    document.getElementById('doc-status').classList.add('show');
+    document.getElementById('rag-ask-btn').disabled = false;
+    docLoaded = true;
+  } catch(e) {
+    showError('upload-error', e.message);
+    docLoaded = false;
+    document.getElementById('rag-ask-btn').disabled = true;
+  } finally {
+    hideLoader('upload-loader');
+  }
+}
+
+async function askRAG() {
+  const question = document.getElementById('rag-question').value.trim();
+  if (!question) { showError('rag-error','Please enter a question.'); return; }
+  if (!docLoaded) { showError('rag-error','Please upload a document first.'); return; }
+  hideError('rag-error');
+  showLoader('rag-loader');
+  document.getElementById('rag-result').classList.remove('show');
+
+  try {
+    const res = await fetch('/api/rag', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ question })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    document.getElementById('rag-answer').textContent = data.answer;
+    document.getElementById('rag-result').classList.add('show');
+  } catch(e) {
+    showError('rag-error', e.message);
+  } finally {
+    hideLoader('rag-loader');
+  }
+}
+
+function loadRAGSample() {
+  document.getElementById('rag-question').value = 'What are the main topics covered in this document?';
+}
+
+// ─── STAGE 3 — CHAT ───────────────────────────────────────────────────────
+function appendMsg(role, text) {
+  const win = document.getElementById('chat-window');
+  const div = document.createElement('div');
+  div.className = 'msg' + (role === 'user' ? ' msg-user' : '');
+
+  const bubbleContent = role === 'user'
+    ? escHtml(text)
+    : renderMarkdown(text);  // render markdown for AI responses
+
+  div.innerHTML = `
+    <div class="msg-avatar ${role==='user'?'av-user':'av-ai'}">${role==='user'?'👤':'🤖'}</div>
+    <div class="msg-bubble ${role==='user'?'bubble-user':'bubble-ai'}">${bubbleContent}</div>
+  `;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function showTyping() {
+  const win = document.getElementById('chat-window');
+  const div = document.createElement('div');
+  div.className = 'msg'; div.id = 'typing-indicator';
+  div.innerHTML = `<div class="msg-avatar av-ai">🤖</div><div class="typing-dots"><span></span><span></span><span></span></div>`;
+  win.appendChild(div);
+  win.scrollTop = win.scrollHeight;
+}
+
+function hideTyping() {
+  document.getElementById('typing-indicator')?.remove();
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>');
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  hideError('chat-error');
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chat-send-btn').disabled = true;
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  appendMsg('user', msg);
+  showTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    hideTyping();
+    appendMsg('ai', data.reply);
+  } catch(e) {
+    hideTyping();
+    showError('chat-error', e.message);
+  } finally {
+    document.getElementById('chat-send-btn').disabled = false;
+  }
+}
+
+function sendSuggestion(text) {
+  document.getElementById('chat-input').value = text;
+  sendChat();
+}
+</script>
+</body>
+</html>

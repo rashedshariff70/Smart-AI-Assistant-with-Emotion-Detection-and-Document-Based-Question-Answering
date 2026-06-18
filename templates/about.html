@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NeuralMind AI — About</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════
+   THEME TOKENS
+═══════════════════════════════════════════════════════ */
+:root,[data-theme="dark"]{
+  --bg:#05080f; --surface:#0d1220; --card:#111827; --card2:#0f172a;
+  --border:#1e2d4a; --border2:#253554;
+  --accent:#38bdf8; --accent2:#818cf8; --accent3:#34d399; --warn:#f59e0b;
+  --text:#e2e8f0; --muted:#64748b; --muted2:#475569;
+  --nav-bg:rgba(5,8,15,.88); --shadow:rgba(0,0,0,.45);
+  --toggle-track:#1e2d4a; --toggle-thumb:#38bdf8;
+  --code-bg:#0f172a; --code-border:#1e2d4a;
+}
+[data-theme="light"]{
+  --bg:#f0f4ff; --surface:#ffffff; --card:#ffffff; --card2:#f8faff;
+  --border:#dde4f0; --border2:#c8d4eb;
+  --accent:#0284c7; --accent2:#6366f1; --accent3:#059669; --warn:#d97706;
+  --text:#0f172a; --muted:#64748b; --muted2:#94a3b8;
+  --nav-bg:rgba(240,244,255,.92); --shadow:rgba(0,0,0,.12);
+  --toggle-track:#dde4f0; --toggle-thumb:#6366f1;
+  --code-bg:#f1f5f9; --code-border:#dde4f0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════════════ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;overflow-x:hidden;
+  transition:background .35s,color .35s;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 20%,rgba(56,189,248,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 80% 70%,rgba(129,140,248,.06) 0%,transparent 60%);
+  transition:opacity .35s;
+}
+[data-theme="light"] body::before{opacity:.4}
+
+/* ═══════════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 3rem;
+  background:var(--nav-bg);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  transition:background .35s,border-color .35s;
+}
+.nav-logo{
+  font-family:'Syne',sans-serif;font-weight:800;font-size:1.4rem;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-.02em;text-decoration:none;
+}
+.nav-right{display:flex;align-items:center;gap:2rem}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.9rem;font-weight:500;
+  transition:color .2s;
+}
+.nav-links a:hover,.nav-links a.active{color:var(--accent)}
+
+/* ─── Theme Toggle ─── */
+.theme-toggle{
+  display:flex;align-items:center;gap:.6rem;cursor:pointer;
+  background:var(--toggle-track);border:1px solid var(--border);
+  border-radius:100px;padding:.35rem .75rem;
+  transition:background .35s,border-color .35s;
+  user-select:none;
+}
+.toggle-icon{font-size:.95rem;line-height:1;transition:transform .3s}
+.toggle-label{
+  font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--muted);transition:color .3s;white-space:nowrap;
+}
+.theme-toggle:hover .toggle-label{color:var(--text)}
+[data-theme="light"] .toggle-icon{transform:rotate(180deg)}
+
+/* ═══════════════════════════════════════════════════════
+   PAGE HEADER
+═══════════════════════════════════════════════════════ */
+.page-header{
+  position:relative;z-index:1;
+  padding:10rem 2rem 5rem;text-align:center;
+  animation:fadeIn .7s ease both;
+}
+.page-header .eyebrow{
+  display:inline-block;
+  background:rgba(129,140,248,.1);
+  border:1px solid rgba(129,140,248,.25);
+  border-radius:100px;
+  padding:.35rem 1rem;font-size:.75rem;font-weight:600;
+  color:var(--accent2);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.5rem;
+  transition:background .35s,border-color .35s;
+}
+[data-theme="light"] .page-header .eyebrow{
+  background:rgba(99,102,241,.1);border-color:rgba(99,102,241,.25);
+}
+.page-header h1{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(2.5rem,6vw,4.5rem);letter-spacing:-.04em;line-height:1.05;
+}
+.page-header p{
+  max-width:520px;margin:1.2rem auto 0;
+  color:var(--muted);font-size:1rem;line-height:1.7;
+}
+
+/* ═══════════════════════════════════════════════════════
+   SECTION
+═══════════════════════════════════════════════════════ */
+.section{position:relative;z-index:1;padding:4rem 2rem 6rem;animation:fadeIn .7s .1s ease both}
+.inner{max-width:1000px;margin:0 auto}
+
+.section-label{
+  font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent2);font-weight:600;margin-bottom:.8rem;
+}
+.section-title{
+  font-family:'Syne',sans-serif;font-weight:800;
+  font-size:clamp(1.8rem,3.5vw,2.6rem);letter-spacing:-.03em;margin-bottom:.8rem;
+}
+.section-sub{color:var(--muted);font-size:.95rem;line-height:1.7;max-width:520px;margin-bottom:2rem}
+
+/* ═══════════════════════════════════════════════════════
+   TIMELINE
+═══════════════════════════════════════════════════════ */
+.timeline{position:relative;padding-left:3rem}
+.timeline::before{
+  content:'';position:absolute;left:.75rem;top:0;bottom:0;
+  width:2px;background:linear-gradient(to bottom,var(--accent),var(--accent2),var(--accent3));
+  border-radius:2px;
+}
+.tl-item{position:relative;margin-bottom:3rem}
+.tl-dot{
+  position:absolute;left:-3rem;top:.2rem;
+  width:1.5rem;height:1.5rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;font-weight:700;
+}
+.tl-dot.blue{background:rgba(56,189,248,.2);border:2px solid var(--accent);color:var(--accent)}
+.tl-dot.purple{background:rgba(129,140,248,.2);border:2px solid var(--accent2);color:var(--accent2)}
+.tl-dot.green{background:rgba(52,211,153,.2);border:2px solid var(--accent3);color:var(--accent3)}
+.tl-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:.4rem;}
+.tl-label.blue{color:var(--accent)}
+.tl-label.purple{color:var(--accent2)}
+.tl-label.green{color:var(--accent3)}
+.tl-item h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.3rem;letter-spacing:-.02em;margin-bottom:.5rem;}
+.tl-item p{color:var(--muted);font-size:.92rem;line-height:1.7;max-width:640px}
+.tl-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.8rem}
+.chip{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;padding:.25rem .7rem;font-size:.75rem;color:var(--muted);
+  transition:background .35s,border-color .35s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TECH GRID
+═══════════════════════════════════════════════════════ */
+.tech-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:1rem;margin-top:2.5rem;
+}
+.tech-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:12px;padding:1.25rem;text-align:center;
+  transition:all .25s;
+}
+.tech-card:hover{border-color:rgba(56,189,248,.3);transform:translateY(-3px);box-shadow:0 10px 30px var(--shadow)}
+.tech-icon{font-size:1.8rem;margin-bottom:.5rem}
+.tech-name{font-weight:600;font-size:.85rem}
+.tech-desc{color:var(--muted);font-size:.75rem;margin-top:.25rem}
+
+/* ═══════════════════════════════════════════════════════
+   ARCHITECTURE BOX
+═══════════════════════════════════════════════════════ */
+.arch-box{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;padding:2.5rem;margin-top:2.5rem;
+  display:grid;grid-template-columns:1fr auto 1fr auto 1fr;
+  gap:1rem;align-items:center;
+  transition:background .35s,border-color .35s;
+}
+.arch-layer{text-align:center}
+.arch-layer-icon{font-size:2rem;margin-bottom:.5rem}
+.arch-layer-name{font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;}
+.arch-layer-sub{color:var(--muted);font-size:.78rem;margin-top:.3rem}
+.arch-arrow{font-size:1.5rem;color:var(--muted2);text-align:center}
+
+/* ═══════════════════════════════════════════════════════
+   CODE BLOCK
+═══════════════════════════════════════════════════════ */
+.code-block{
+  background:var(--code-bg);border:1px solid var(--code-border);
+  border-radius:12px;padding:1.5rem;margin-top:1.5rem;
+  font-family:monospace;font-size:.88rem;line-height:1.8;color:#94a3b8;
+  transition:background .35s,border-color .35s;
+}
+[data-theme="light"] .code-block{color:#475569}
+code{
+  background:var(--code-bg);border:1px solid var(--code-border);
+  padding:.1rem .4rem;border-radius:4px;font-size:.85em;
+  transition:background .35s,border-color .35s;
+}
+
+.divider{height:1px;background:var(--border);margin:4rem 0;transition:background .35s}
+
+/* ═══════════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════════ */
+footer{
+  position:relative;z-index:1;border-top:1px solid var(--border);
+  padding:2rem 3rem;display:flex;justify-content:space-between;
+  align-items:center;color:var(--muted);font-size:.82rem;
+  transition:border-color .35s;
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════════ */
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+
+@media(max-width:640px){
+  nav{padding:1rem 1.5rem}
+  .arch-box{grid-template-columns:1fr;grid-template-rows:auto}
+  .arch-arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">NeuralMind AI</a>
+  <div class="nav-right">
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/about" class="active">About</a></li>
+      <li><a href="/prediction">Try Now</a></li>
+    </ul>
+    <!-- THEME TOGGLE -->
+    <div class="theme-toggle" onclick="toggleTheme()" title="Switch theme">
+      <span class="toggle-icon" id="toggle-icon">🌙</span>
+      <span class="toggle-label" id="toggle-label">Dark</span>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="eyebrow">Project Deep-Dive</div>
+  <h1>About NeuralMind AI</h1>
+  <p>A full-stack AI platform combining emotion intelligence, retrieval-augmented generation, and conversational AI — all powered by Groq's ultra-fast inference.</p>
+</div>
+
+<section class="section">
+  <div class="inner">
+
+    <!-- Three stages timeline -->
+    <p class="section-label">The Three Stages</p>
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Each stage is an independent AI pipeline sharing the same Qwen3-32B backbone with tailored system prompts.</p>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-dot blue">1</div>
+        <div class="tl-label blue">Stage 1</div>
+        <h3>Emotion Detection Engine</h3>
+        <p>Takes raw text input, sends it to Qwen3-32B with a structured JSON-output system prompt, and parses the response into a rich emotion profile: 7 emotion scores (joy, sadness, anger, fear, surprise, disgust, neutral), an overall sentiment label, intensity level, and an empathetic one-line insight.</p>
+        <div class="tl-chips">
+          <span class="chip">Zero-shot prompting</span>
+          <span class="chip">Structured JSON output</span>
+          <span class="chip">7 emotion classes</span>
+          <span class="chip">Confidence scoring</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot purple">2</div>
+        <div class="tl-label purple">Stage 2</div>
+        <h3>RAG Document Intelligence</h3>
+        <p>Users upload a PDF, DOCX, or plain TXT file. The backend extracts the full text (PyPDF2 / python-docx), stores it per-session, then injects it as context into every query. The model is strictly grounded to the document — it won't hallucinate content that isn't there.</p>
+        <div class="tl-chips">
+          <span class="chip">PyPDF2 · python-docx</span>
+          <span class="chip">Session-scoped RAG</span>
+          <span class="chip">Context-grounded answers</span>
+          <span class="chip">15K token doc window</span>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-dot green">3</div>
+        <div class="tl-label green">Stage 3</div>
+        <h3>Project Q&amp;A Chatbot</h3>
+        <p>A multi-turn chatbot that knows the NeuralMind project inside out — tech stack, architecture, API key format, deployment options, and more. Maintains a rolling 10-turn conversation history per session for coherent dialogue.</p>
+        <div class="tl-chips">
+          <span class="chip">Multi-turn history</span>
+          <span class="chip">Knowledge-scoped system prompt</span>
+          <span class="chip">Session memory</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Tech stack -->
+    <p class="section-label">Technology</p>
+    <h2 class="section-title">Built with modern tools</h2>
+    <div class="tech-grid">
+      <div class="tech-card"><div class="tech-icon">🐍</div><div class="tech-name">Python 3.10+</div><div class="tech-desc">Core runtime</div></div>
+      <div class="tech-card"><div class="tech-icon">⚗️</div><div class="tech-name">Flask</div><div class="tech-desc">Web framework</div></div>
+      <div class="tech-card"><div class="tech-icon">⚡</div><div class="tech-name">Groq API</div><div class="tech-desc">LLM inference</div></div>
+      <div class="tech-card"><div class="tech-icon">🤖</div><div class="tech-name">Qwen3-32B</div><div class="tech-desc">AI backbone</div></div>
+      <div class="tech-card"><div class="tech-icon">📄</div><div class="tech-name">PyPDF2</div><div class="tech-desc">PDF parsing</div></div>
+      <div class="tech-card"><div class="tech-icon">📝</div><div class="tech-name">python-docx</div><div class="tech-desc">Word docs</div></div>
+      <div class="tech-card"><div class="tech-icon">🔑</div><div class="tech-name">dotenv</div><div class="tech-desc">Secrets mgmt</div></div>
+      <div class="tech-card"><div class="tech-icon">🎨</div><div class="tech-name">Vanilla JS</div><div class="tech-desc">Frontend</div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Architecture -->
+    <p class="section-label">Architecture</p>
+    <h2 class="section-title">Request flow</h2>
+    <div class="arch-box">
+      <div class="arch-layer">
+        <div class="arch-layer-icon">🖥️</div>
+        <div class="arch-layer-name">Browser</div>
+        <div class="arch-layer-sub">HTML + JS<br/>fetch() API</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-layer">
+        <div class="arch-layer-icon">⚗️</div>
+        <div class="arch-layer-name">Flask</div>
+        <div class="arch-layer-sub">Route handlers<br/>Session store</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-layer">
+        <div class="arch-layer-icon">⚡</div>
+        <div class="arch-layer-name">Groq API</div>
+        <div class="arch-layer-sub">Qwen3-32B<br/>Ultra-fast tokens</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- API key format note -->
+    <p class="section-label">Configuration</p>
+    <h2 class="section-title">API key format</h2>
+    <p class="section-sub">The project reads both the key and model name from a single <code>.env</code> variable using an inline comment convention:</p>
+    <div class="code-block">
+      <span style="color:var(--muted)"># .env</span><br/>
+      GROQ_API_KEY_QWEN=<span style="color:var(--accent3)">gsk_XXXXXXXXXXXXXXXX</span><span style="color:var(--muted)">#qwen/qwen3-32b_emotion_llm</span>
+    </div>
+    <p style="color:var(--muted);font-size:.88rem;margin-top:1rem;line-height:1.7">The app splits on <code>#</code> — everything before is the API key, everything after is the model ID passed to <code>client.chat.completions.create(model=...)</code>.</p>
+
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 NeuralMind AI · Flask + Groq + Qwen3-32B</span>
+  <a href="/prediction" style="color:var(--accent);text-decoration:none;font-weight:500">Try the App →</a>
+</footer>
+
+<script>
+function applyTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  localStorage.setItem('nm-theme',t);
+  const icon  = document.getElementById('toggle-icon');
+  const label = document.getElementById('toggle-label');
+  if(icon){
+    icon.textContent  = t==='light' ? '☀️' : '🌙';
+    label.textContent = t==='light' ? 'Light' : 'Dark';
+  }
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(cur==='dark' ? 'light' : 'dark');
+}
+(function(){
+  const saved = localStorage.getItem('nm-theme') || 'dark';
+  applyTheme(saved);
+})();
+</script>
+</body>
+</html>
