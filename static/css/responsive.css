@@ -1,0 +1,272 @@
+/* =====================================================
+   GLOBAL RESPONSIVE FIXES
+===================================================== */
+
+*{
+    max-width:100%;
+}
+
+html,
+body{
+    width:100%;
+    overflow-x:hidden;
+}
+
+/* Images */
+img{
+    max-width:100%;
+    height:auto;
+    display:block;
+}
+
+/* Videos */
+video,
+iframe{
+    max-width:100%;
+}
+
+/* Tables */
+table{
+    width:100%;
+    display:block;
+    overflow-x:auto;
+}
+
+/* Forms */
+input,
+select,
+textarea,
+button{
+    max-width:100%;
+}
+
+/* =====================================================
+   LARGE TABLETS
+===================================================== */
+
+@media screen and (max-width:992px){
+
+    nav{
+        padding:1rem 1.5rem !important;
+    }
+
+    .hero{
+        padding:7rem 1.5rem 3rem !important;
+    }
+
+    .section{
+        padding:4rem 1.5rem !important;
+    }
+
+    .cta-inner{
+        padding:3rem 2rem !important;
+    }
+
+    .cards{
+        grid-template-columns:repeat(auto-fit,minmax(260px,1fr)) !important;
+    }
+
+    .stats{
+        grid-template-columns:repeat(auto-fit,minmax(150px,1fr)) !important;
+    }
+}
+
+/* =====================================================
+   TABLETS & MOBILE
+===================================================== */
+
+@media screen and (max-width:768px){
+
+    nav{
+        padding:1rem !important;
+        flex-wrap:wrap;
+        gap:1rem;
+    }
+
+    .nav-right{
+        width:100%;
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+    }
+
+    .nav-links{
+        gap:1rem !important;
+        flex-wrap:wrap;
+    }
+
+    .hero{
+        min-height:auto !important;
+        padding-top:8rem !important;
+        padding-bottom:3rem !important;
+    }
+
+    .hero h1{
+        font-size:clamp(2rem,10vw,3.5rem) !important;
+        line-height:1.15 !important;
+    }
+
+    .hero-sub{
+        font-size:1rem !important;
+        line-height:1.6 !important;
+    }
+
+    .hero-cta{
+        flex-direction:column;
+        width:100%;
+        align-items:center;
+    }
+
+    .hero-cta .btn{
+        width:100%;
+        max-width:320px;
+        justify-content:center;
+    }
+
+    .badge-grid{
+        justify-content:center;
+    }
+
+    .cards{
+        grid-template-columns:1fr !important;
+    }
+
+    .card{
+        padding:1.5rem !important;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr !important;
+    }
+
+    .stat{
+        padding:1.5rem 1rem !important;
+    }
+
+    .stat-num{
+        font-size:2rem !important;
+    }
+
+    .cta-inner{
+        padding:2rem 1.5rem !important;
+    }
+
+    footer{
+        flex-direction:column !important;
+        text-align:center;
+        gap:.75rem;
+        padding:1.5rem 1rem !important;
+    }
+}
+
+/* =====================================================
+   SMALL MOBILE DEVICES
+===================================================== */
+
+@media screen and (max-width:480px){
+
+    nav{
+        padding:.8rem !important;
+    }
+
+    .nav-logo{
+        font-size:1.1rem !important;
+    }
+
+    .nav-links{
+        gap:.75rem !important;
+    }
+
+    .nav-links a{
+        font-size:.8rem !important;
+    }
+
+    .hero{
+        padding-top:7.5rem !important;
+    }
+
+    .hero h1{
+        font-size:2rem !important;
+    }
+
+    .hero-sub{
+        font-size:.95rem !important;
+    }
+
+    .section{
+        padding:3rem 1rem !important;
+    }
+
+    .section-title{
+        font-size:1.8rem !important;
+    }
+
+    .cards{
+        gap:1rem !important;
+    }
+
+    .card{
+        padding:1.2rem !important;
+    }
+
+    .card h3{
+        font-size:1rem !important;
+    }
+
+    .card p{
+        font-size:.85rem !important;
+    }
+
+    .stats{
+        grid-template-columns:1fr !important;
+    }
+
+    .stat-num{
+        font-size:1.8rem !important;
+    }
+
+    .cta-inner{
+        padding:2rem 1rem !important;
+    }
+
+    .cta-inner h2{
+        font-size:1.6rem !important;
+    }
+
+    .theme-toggle{
+        padding:.3rem .5rem !important;
+    }
+
+    footer{
+        font-size:.75rem !important;
+    }
+}
+
+/* =====================================================
+   EXTRA SMALL DEVICES
+===================================================== */
+
+@media screen and (max-width:360px){
+
+    .hero h1{
+        font-size:1.8rem !important;
+    }
+
+    .hero-sub{
+        font-size:.9rem !important;
+    }
+
+    .btn{
+        width:100%;
+    }
+
+    .badge{
+        width:100%;
+        justify-content:center;
+    }
+
+    .nav-links{
+        width:100%;
+        justify-content:center;
+    }
+}
